@@ -1,6 +1,7 @@
 "use client";
 
 import Timer from "@/components/Timer";
+import AIAssistant from "@/components/AIAssistant";
 import { useAuth } from "@/store/useAuth";
 import { motion } from "framer-motion";
 
@@ -40,6 +41,9 @@ export default function DashboardPage() {
 
         {/* Side Widgets */}
         <div className="space-y-6">
+          {/* AI Assistant */}
+          <AIAssistant />
+
           {/* Task Summary */}
           <div className="glass-card p-6 h-full">
             <h3 className="font-space font-bold text-lg mb-4">Today's Focus</h3>
