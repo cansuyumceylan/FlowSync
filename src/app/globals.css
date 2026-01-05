@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-mint: #BAFF39;
+  --color-charcoal: #0F1115;
+  --color-glass: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+
+  --font-space: "Space Grotesk", sans-serif;
+  --font-inter: "Inter", sans-serif;
+
+  --animate-bounce-subtle: bounce-subtle 0.5s ease-in-out;
+  
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+}
+
+:root {
+  --background: #0F1115;
+  --foreground: #ffffff;
+  --mint: #BAFF39;
+  --charcoal: #0F1115;
+}
+
+@layer base {
+  * {
+    @apply border-white/10;
+  }
+  body {
+    @apply bg-charcoal text-white font-inter selection:bg-mint selection:text-charcoal;
+    background-image: 
+      radial-gradient(circle at 0% 0%, rgba(186, 255, 57, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(186, 255, 57, 0.03) 0%, transparent 50%);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-space font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+  }
+  
+  .btn-primary {
+    @apply bg-mint text-charcoal px-6 py-2.5 rounded-xl font-bold transition-all duration-300 hover:brightness-110 active:scale-95 disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-xl transition-all;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-white/20;
+}
