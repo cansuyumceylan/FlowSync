@@ -9,6 +9,8 @@ export interface Task {
   scheduledDate: string | null; // ISO Date "YYYY-MM-DD"
   startTime: string | null; // "HH:mm"
   duration: number; // minutes
+  priority: 'low' | 'medium' | 'high'; // NEW
+  notes: string; // NEW
 }
 
 interface TaskState {
@@ -31,7 +33,9 @@ export const useTaskStore = create<TaskState>()(
           createdAt: Date.now(),
           scheduledDate: new Date().toISOString().split('T')[0],
           startTime: '09:00',
-          duration: 25
+          duration: 25,
+          priority: 'medium',
+          notes: 'Welcome to FlowSync! This is your first task.'
         }
       ],
       addTask: (title, scheduledDate = null) => set((state) => ({
@@ -45,6 +49,8 @@ export const useTaskStore = create<TaskState>()(
             scheduledDate,
             startTime: null,
             duration: 25,
+            priority: 'medium',
+            notes: ''
           },
         ],
       })),
