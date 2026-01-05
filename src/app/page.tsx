@@ -1,9 +1,15 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, Calendar, Zap, Brain, Shield, Clock } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Calendar, Zap, Brain, Shield, Clock, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import AuthUI from "@/components/AuthUI";
 
 export default function Home() {
+  const { t } = useTranslation();
+  const [showAuth, setShowAuth] = useState(false);
+
   return (
     <div className="relative isolate min-h-screen overflow-hidden">
       {/* Background Orbs */}
@@ -11,7 +17,7 @@ export default function Home() {
       <div className="absolute top-1/2 -right-40 h-80 w-80 rounded-full bg-mint/5 blur-[100px]" />
 
       <main className="container mx-auto px-6 pt-24 pb-32">
-        {/* Navigation Placeholder */}
+        {/* Navigation */}
         <nav className="flex items-center justify-between mb-24">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 bg-mint rounded-lg flex items-center justify-center">
@@ -24,8 +30,8 @@ export default function Home() {
             <a href="#" className="hover:text-mint transition-colors">Presets</a>
             <a href="#" className="hover:text-mint transition-colors">Pricing</a>
           </div>
-          <button className="btn-primary flex items-center gap-2">
-            Get Started <ArrowRight className="h-4 w-4" />
+          <button onClick={() => setShowAuth(true)} className="btn-primary flex items-center gap-2">
+            {t('hero.cta')} <ArrowRight className="h-4 w-4" />
           </button>
         </nav>
 
@@ -40,39 +46,59 @@ export default function Home() {
               AI-Powered Deep Focus
             </span>
             <h1 className="text-5xl md:text-7xl mb-8 leading-[1.1]">
-              Master Your <span className="text-mint">Flow State</span> <br />
-              With Smart Scheduling
+              <span dangerouslySetInnerHTML={{ __html: t('hero.title').replace('Flow State', '<span class="text-mint">Flow State</span>') }} />
             </h1>
             <p className="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
-              FlowSync bridges the gap between your calendar and deep concentration.
-              Let AI handle the planning while you focus on what matters.
+              {t('hero.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="btn-primary w-full sm:w-auto h-14 px-10 text-lg flex items-center justify-center gap-2">
-                Launch Dashboard <ArrowRight className="h-5 w-5" />
+              <button onClick={() => setShowAuth(true)} className="btn-primary w-full sm:w-auto h-14 px-10 text-lg flex items-center justify-center gap-2">
+                {t('hero.cta')} <ArrowRight className="h-5 w-5" />
               </button>
               <button className="btn-ghost w-full sm:w-auto h-14 px-10 text-lg border border-white/10">
-                View Demo
+                {t('hero.demo')}
               </button>
             </div>
           </motion.div>
         </div>
 
+        {/* Auth Modal Overlay */}
+        <AnimatePresence>
+          {showAuth && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-charcoal/80 backdrop-blur-sm"
+            >
+              <div className="relative w-full max-w-md">
+                <button 
+                  onClick={() => setShowAuth(false)}
+                  className="absolute -top-12 right-0 text-white/60 hover:text-white"
+                >
+                  <X className="w-8 h-8" />
+                </button>
+                <AuthUI />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Features Grid */}
         <div className="grid md:grid-cols-3 gap-6">
           <FeatureCard
             icon={<Calendar className="h-6 w-6 text-mint" />}
-            title="Calendar Sync"
+            title={t('features.calendar')}
             description="Two-way sync with Google & Outlook. Your focus sessions are perfectly aligned with your availability."
           />
           <FeatureCard
             icon={<Brain className="h-6 w-6 text-mint" />}
-            title="AI Recommendations"
+            title={t('features.ai')}
             description="Gemini-powered insights suggest the perfect Pomodoro mode based on your task complexity."
           />
           <FeatureCard
             icon={<Shield className="h-6 w-6 text-mint" />}
-            title="Smart Rescheduling"
+            title={t('features.rescheduling')}
             description="Interrupted? FlowSync automatically finds the next best slot for your deep work session."
           />
         </div>
