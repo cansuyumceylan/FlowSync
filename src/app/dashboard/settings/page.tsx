@@ -7,7 +7,7 @@ import { useFocusStore } from '@/store/useFocusStore';
 import { useNoteStore } from '@/store/useNoteStore';
 import { useActivityStore } from '@/store/useActivityStore';
 import { useScheduleStore, DayOfWeek, BlockType } from '@/store/useScheduleStore'; // Import new store
-import { LogOut, Trash2, Globe, Database, CalendarClock, Plus, X } from 'lucide-react';
+import { LogOut, Trash2, Globe, Database, CalendarClock, Plus, X, Download, Upload } from 'lucide-react';
 import { useState, useRef } from 'react';
 
 export default function SettingsPage() {
