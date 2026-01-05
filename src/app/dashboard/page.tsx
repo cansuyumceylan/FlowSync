@@ -2,6 +2,7 @@
 
 import Timer from "@/components/Timer";
 import AIAssistant from "@/components/AIAssistant";
+import TaskList from "@/components/TaskList";
 import { useAuth } from "@/store/useAuth";
 import { motion } from "framer-motion";
 
@@ -44,24 +45,8 @@ export default function DashboardPage() {
           {/* AI Assistant */}
           <AIAssistant />
 
-          {/* Task Summary */}
-          <div className="glass-card p-6 h-full">
-            <h3 className="font-space font-bold text-lg mb-4">Today's Focus</h3>
-            <div className="space-y-3">
-              <div className="p-3 rounded-xl bg-white/5 border border-white/5 border-l-2 border-l-mint">
-                <p className="font-medium text-sm">Design System Review</p>
-                <span className="text-xs text-white/40">10:00 AM - 11:00 AM</span>
-              </div>
-              <div className="p-3 rounded-xl bg-white/5 border border-white/5">
-                <p className="font-medium text-sm text-white/60">Team Standup</p>
-                <span className="text-xs text-white/40">11:30 AM - 12:00 PM</span>
-              </div>
-              
-              <button className="w-full py-2 mt-4 text-sm text-mint border border-mint/20 rounded-lg hover:bg-mint/10 transition-colors">
-                + Add Task
-              </button>
-            </div>
-          </div>
+          {/* Task List */}
+          <TaskList />
         </div>
       </div>
     </div>
