@@ -6,22 +6,35 @@ export interface Task {
   title: string;
   isCompleted: boolean;
   createdAt: number;
+  scheduledDate: string | null; // ISO Date "YYYY-MM-DD"
+  startTime: string | null; // "HH:mm"
+  duration: number; // minutes
 }
 
 interface TaskState {
   tasks: Task[];
-  addTask: (title: string) => void;
+  addTask: (title: string, scheduledDate?: string | null) => void;
   removeTask: (id: string) => void;
   toggleTask: (id: string) => void;
+  updateTask: (id: string, updates: Partial<Task>) => void;
+  moveTask: (id: string, date: string | null, time?: string | null) => void;
 }
 
 export const useTaskStore = create<TaskState>()(
   persist(
     (set) => ({
       tasks: [
-        { id: '1', title: 'Start your first Focus Session', isCompleted: false, createdAt: Date.now() }
+        { 
+          id: '1', 
+          title: 'Start your first Focus Session', 
+          isCompleted: false, 
+          createdAt: Date.now(),
+          scheduledDate: new Date().toISOString().split('T')[0],
+          startTime: '09:00',
+          duration: 25
+        }
       ],
-      addTask: (title) => set((state) => ({
+      addTask: (title, scheduledDate = null) => set((state) => ({
         tasks: [
           ...state.tasks,
           {
@@ -29,6 +42,9 @@ export const useTaskStore = create<TaskState>()(
             title,
             isCompleted: false,
             createdAt: Date.now(),
+            scheduledDate,
+            startTime: null,
+            duration: 25,
           },
         ],
       })),
@@ -39,6 +55,16 @@ export const useTaskStore = create<TaskState>()(
         tasks: state.tasks.map((t) =>
           t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
         ),
+      })),
+      updateTask: (id, updates) => set((state) => ({
+        tasks: state.tasks.map((t) => 
+          t.id === id ? { ...t, ...updates } : t
+        )
+      })),
+      moveTask: (id, date, time = null) => set((state) => ({
+        tasks: state.tasks.map((t) =>
+          t.id === id ? { ...t, scheduledDate: date, startTime: time } : t
+        )
       })),
     }),
     {

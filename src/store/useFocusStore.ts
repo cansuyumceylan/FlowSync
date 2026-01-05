@@ -8,7 +8,9 @@ interface FocusState {
   isActive: boolean;
   mode: FocusMode;
   totalDuration: number;
+  activeTaskId: string | null; // ID of the task being worked on
   setMode: (mode: FocusMode) => void;
+  setActiveTask: (taskId: string | null) => void;
   toggleTimer: () => void;
   resetTimer: () => void;
   tick: () => void;
@@ -28,12 +30,14 @@ export const useFocusStore = create<FocusState>()(
       timeLeft: MODES.spark,
       totalDuration: MODES.spark,
       isActive: false,
+      activeTaskId: null,
       setMode: (mode) => set({ 
         mode, 
         timeLeft: MODES[mode], 
         totalDuration: MODES[mode], 
         isActive: false 
       }),
+      setActiveTask: (taskId) => set({ activeTaskId: taskId }),
       toggleTimer: () => set((state) => ({ isActive: !state.isActive })),
       resetTimer: () => set((state) => ({ 
         timeLeft: MODES[state.mode], 
