@@ -6,7 +6,8 @@ import { useTaskStore } from '@/store/useTaskStore';
 import { useFocusStore } from '@/store/useFocusStore';
 import { useNoteStore } from '@/store/useNoteStore';
 import { useActivityStore } from '@/store/useActivityStore';
-import { LogOut, Trash2, Globe, Database, Moon, Sun, Download, Upload } from 'lucide-react';
+import { useScheduleStore, DayOfWeek, BlockType } from '@/store/useScheduleStore'; // Import new store
+import { LogOut, Trash2, Globe, Database, CalendarClock, Plus, X } from 'lucide-react';
 import { useState, useRef } from 'react';
 
 export default function SettingsPage() {
@@ -14,6 +15,23 @@ export default function SettingsPage() {
   const { signOut, user } = useAuth();
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Schedule Logic
+  const { blocks, addBlock, removeBlock } = useScheduleStore();
+  const [selectedDay, setSelectedDay] = useState<DayOfWeek>('Monday');
+  const [newBlock, setNewBlock] = useState({ start: '09:00', end: '10:00', label: 'Work', type: 'work' as BlockType });
+
+  const days: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  const handleAddBlock = () => {
+      addBlock({
+          day: selectedDay,
+          startTime: newBlock.start,
+          endTime: newBlock.end,
+          label: newBlock.label,
+          type: newBlock.type
+      });
+  };
 
   // Clear functions
   const clearTasks = () => useTaskStore.persist.clearStorage();
@@ -39,7 +57,8 @@ export default function SettingsPage() {
         focus: localStorage.getItem('flowsync-focus-storage'),
         notes: localStorage.getItem('flowsync-note-storage'),
         activity: localStorage.getItem('flowsync-activity-storage'),
-        version: '1.0',
+        schedule: localStorage.getItem('flowsync-schedule-storage'), // Export Schedule
+        version: '1.1',
         exportedAt: new Date().toISOString()
     };
     
@@ -72,6 +91,7 @@ export default function SettingsPage() {
               if (data.focus) localStorage.setItem('flowsync-focus-storage', data.focus);
               if (data.notes) localStorage.setItem('flowsync-note-storage', data.notes);
               if (data.activity) localStorage.setItem('flowsync-activity-storage', data.activity);
+              if (data.schedule) localStorage.setItem('flowsync-schedule-storage', data.schedule);
 
               setImportStatus('Data imported successfully! Reloading...');
               setTimeout(() => window.location.reload(), 1500);
@@ -88,7 +108,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8 pb-10">
       <div>
         <h1 className="text-3xl font-space font-bold mb-2">Settings</h1>
         <p className="text-white/60">Customize your FlowSync experience.</p>
@@ -114,6 +134,75 @@ export default function SettingsPage() {
                 Türkçe
             </button>
         </div>
+      </div>
+
+      {/* Weekly Schedule Section - NEW */}
+      <div className="glass-card p-6">
+          <div className="flex items-center gap-3 mb-6 text-purple-400">
+             <CalendarClock className="w-5 h-5" />
+             <h2 className="font-bold">Weekly Routine & Time Blocks</h2>
+          </div>
+          
+          <div className="flex flex-wrap gap-2 mb-6">
+              {days.map(day => (
+                  <button
+                    key={day}
+                    onClick={() => setSelectedDay(day)}
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-all ${selectedDay === day ? 'bg-purple-500 text-white font-bold' : 'bg-white/5 text-white/60 hover:bg-white/10'}`}
+                  >
+                      {day.slice(0, 3)}
+                  </button>
+              ))}
+          </div>
+
+          <div className="space-y-4">
+              <div className="flex gap-2 items-end bg-white/5 p-4 rounded-xl">
+                  <div className="flex-1 space-y-1">
+                      <label className="text-xs text-white/40">Start</label>
+                      <input type="time" value={newBlock.start} onChange={e => setNewBlock({...newBlock, start: e.target.value})} className="w-full bg-black/20 rounded p-2 text-sm text-white focus:outline-none" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                      <label className="text-xs text-white/40">End</label>
+                      <input type="time" value={newBlock.end} onChange={e => setNewBlock({...newBlock, end: e.target.value})} className="w-full bg-black/20 rounded p-2 text-sm text-white focus:outline-none" />
+                  </div>
+                  <div className="flex-[2] space-y-1">
+                      <label className="text-xs text-white/40">Label</label>
+                      <input type="text" value={newBlock.label} onChange={e => setNewBlock({...newBlock, label: e.target.value})} className="w-full bg-black/20 rounded p-2 text-sm text-white focus:outline-none" placeholder="Deep Work" />
+                  </div>
+                   <div className="flex-1 space-y-1">
+                      <label className="text-xs text-white/40">Type</label>
+                      <select value={newBlock.type} onChange={e => setNewBlock({...newBlock, type: e.target.value as BlockType})} className="w-full bg-black/20 rounded p-2 text-sm text-white focus:outline-none">
+                          <option value="work">Work</option>
+                          <option value="hobby">Hobby</option>
+                          <option value="rest">Rest</option>
+                          <option value="other">Other</option>
+                      </select>
+                  </div>
+                  <button onClick={handleAddBlock} className="p-2 bg-purple-500 rounded text-white hover:bg-purple-400">
+                      <Plus className="w-5 h-5" />
+                  </button>
+              </div>
+
+               <div className="space-y-2">
+                  {blocks.filter(b => b.day === selectedDay).sort((a,b) => a.startTime.localeCompare(b.startTime)).map(block => (
+                      <div key={block.id} className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded-lg group">
+                          <div className="flex items-center gap-4">
+                              <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${block.type === 'work' ? 'bg-blue-500/20 text-blue-400' : block.type === 'hobby' ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}>
+                                  {block.type}
+                              </span>
+                              <span className="font-mono text-sm text-white/80">{block.startTime} - {block.endTime}</span>
+                              <span className="font-medium text-white">{block.label}</span>
+                          </div>
+                          <button onClick={() => removeBlock(block.id)} className="text-white/20 hover:text-red-400 transition-colors">
+                              <X className="w-4 h-4" />
+                          </button>
+                      </div>
+                  ))}
+                  {blocks.filter(b => b.day === selectedDay).length === 0 && (
+                      <p className="text-center text-sm text-white/30 py-4">No blocks scheduled for {selectedDay}.</p>
+                  )}
+               </div>
+          </div>
       </div>
 
       {/* Data Management Section */}
